@@ -22,8 +22,8 @@ class JoblyApi {
     const url = `${BASE_URL}/${endpoint}`;
     const headers = { Authorization: `Bearer ${JoblyApi.token}` };
     const params = (method === "get")
-        ? data
-        : {};
+      ? data
+      : {};
 
     try {
       return (await axios({ url, method, data, params, headers })).data;
@@ -36,17 +36,60 @@ class JoblyApi {
 
   // Individual API routes
 
-  /** Get details on a company by handle. */
 
+  // Get info about all companies, or filtered list of jobs
+  static async getCompanies(name) {
+    let res = await this.request(`companies`, { name });
+    return res.companies;
+  }
+
+  /** Get details on a company by handle. */
   static async getCompany(handle) {
     let res = await this.request(`companies/${handle}`);
     return res.company;
   }
 
-  // obviously, you'll add a lot here ...
+
+  // Get info about all jobs, or filtered list of jobs
+  static async getJobs(name) {
+    let res = await this.request(`jobs`, { name });
+    return res.jobs;
+  }
+
+  /** Apply to a job. */
+  static async applyToJob(username, id) {
+    await this.request(`users/${username}/jobs/${id}`, {}, 'post');
+
+  }
+
+  // login to site, get token
+
+  static async login(data) {
+    let res = await this.request(`auth/token`, data, 'post');
+    return res.token;
+  }
+
+  //  sign up for site
+  static async signup(data) {
+    let res = await this.request(`auth/register`, data, 'post');
+    return res.token;
+  }
+
+  // update user info
+  static async updateUser(username, data) {
+    let res = await this.request(`users/${username}`, data, 'patch');
+    return res.data;
+  }
+
+  // get current user
+  static async getCurrentUser(username) {
+    let res = await this.request(`users/${username}`);
+    return res.user;
+  }
+
 }
 
 // for now, put token ("testuser" / "password" on class)
 JoblyApi.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ" +
-    "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
-    "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
+  "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
+  "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
